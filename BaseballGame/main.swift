@@ -35,3 +35,5 @@ var random: Random = Random()
 print(random.randomNumber(randomNumberCount: 3))
 //print("임의의 수 3가지를 입력하세요. ex) 1 2 3")
 
+
+
