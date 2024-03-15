@@ -107,22 +107,71 @@ import Foundation
  - 092 → 불가능
  - 870 → 가능
  - 300 → 불가능
+ 
+ Lv4
+ 프로그램을 시작할 때 안내문구를 보여주세요
+ // 예시
+ 환영합니다! 원하시는 번호를 입력해주세요
+ 1. 게임 시작하기  2. 게임 기록 보기  3. 종료하기
+ 
+ // 예시
+ 환영합니다! 원하시는 번호를 입력해주세요
+ 1. 게임 시작하기  2. 게임 기록 보기  3. 종료하기
+ 1 // 1번 게임 시작하기 입력
+
+ < 게임을 시작합니다 >
+ 숫자를 입력하세요
+ .
+ .
+ .
+ 
+ Lv5
+ // 예시
+ 환영합니다! 원하시는 번호를 입력해주세요
+ 1. 게임 시작하기  2. 게임 기록 보기  3. 종료하기
+ 2 // 2번 게임 기록 보기 입력
+
+ < 게임 기록 보기 >
+ 1번째 게임 : 시도 횟수 - 14
+ 2번째 게임 : 시도 횟수 - 9
+ 3번째 게임 : 시도 횟수 - 12
+ .
+ .
+ .
+ 
+ Lv6
+ 3번 종료하기의 경우 프로그램이 종료됩니다
+ 이전의 게임 기록들도 초기화됩니다
+ // 예시
+ 환영합니다! 원하시는 번호를 입력해주세요
+ 1. 게임 시작하기  2. 게임 기록 보기  3. 종료하기
+ 3 // 3번 종료하기 입력
+ 
+ 1, 2, 3 이외의 입력값에 대해서는 오류 메시지를 보여주세요
+ // 예시
+ 환영합니다! 원하시는 번호를 입력해주세요
+ 1. 게임 시작하기  2. 게임 기록 보기  3. 종료하기
+ 4
+
+ 올바른 숫자를 입력해주세요!
+ 
+ < 숫자 야구 게임을 종료합니다 >
  */
 class BaseballGame {
-    var num: Int
+    var comNum: String = "" //컴퓨터 랜덤 값
+    var strike: Int = 0     //스트라이크 개수
+    var ball: Int = 0       //볼 개수
+    var flag: Bool = false  //게임 정답 유무 확인
+    
+    var inputCnt: Int = 0   //입력횟수
     
     init() {
-        num = 0             //num 초기화 없이 randomNum 호출 시 에러
-        gameStart()         //게임시작
-        num = randomNum()   //컴퓨터 기본 값 셋팅
-    }
-    
-    func gameStart() {
         print("< 게임을 시작합니다. >")
+        self.comNum = randomNum()   //컴퓨터 기본 값 셋팅
     }
     
     //컴퓨터 초기 값 셋팅
-    func randomNum() -> Int {
+    func randomNum() -> String {
         var index: Int = 0
         var ranNum: String = ""
         var arr: [Int] = Array(0...9)
@@ -135,73 +184,149 @@ class BaseballGame {
             arr.remove(at: index)
         }
         
-        return Int(ranNum)!
+        return ranNum
     }
-}
-
-//컴퓨터 숫자 초기화
-let baseballGame: BaseballGame = BaseballGame()
-//print("컴터 선택 값: \(baseballGame.num)")
-var myNum: Int = 0 // 내 선택 값
-
-repeat {
-    print("-----------------------")
-    print("숫자를 입력하세요.")
-    if let inputData = readLine() {
-        //길이 체크
+    
+    //입력 값 받아오기
+    func inputData() -> String {
+        self.inputCnt += 1
+        print("-------------------------------")
+        print("숫자를 입력하세요")
+        if let inputData = readLine() {
+            return inputData
+        } else {
+            return ""
+        }
+    }
+    
+    //데이터 체크
+    func inputDataValidation(_ inputData: String) -> Bool {
         if inputData.count != 3 {
             print("올바르지 않은 입력값입니다. (3자리 입력)")
+            return false
         } else {
-            //문자 체크
+            //숫자/문자 체크
             if let number = Int(inputData) {
-                myNum = number
-                
-                //print("숫자만 입력받았습니다. ")
-                //중복 체크
-                if Set(inputData).count == 3 {
-                    //중복된 값이 없을때 체크
-                    var comNumArr: [String] = []
-                    var myNumArr: [String] = []
-                    var strike: Int = 0
-                    var ball: Int = 0
-                    
-                    for i in String(baseballGame.num) {
-                        comNumArr.append(String(i))
-                    }
-                    for i in inputData {
-                        myNumArr.append(String(i))
-                    }
-                    
-                    for i in 0...inputData.count - 1 {
-                        //숫자가 일치하면 스트라이크
-                        for j in 0...inputData.count - 1 {
-                            //print("i: \(i), j: \(j), comNumArr[\(i)]: \(comNumArr[i]), myNumArr[\(j)]: \(myNumArr[j])")
-                            
-                            //index와 값이 일치하면 스트라이크
-                            if (i == j) && (comNumArr[i] == myNumArr[j]) {
-                                strike += 1
-                                //값이 일치하지만 index가 다르면 ball
-                            } else if (i != j) && (comNumArr[i] == myNumArr[j]) {
-                                ball += 1
-                            }
-                        }
-                    }
-                    
-                    print("\(strike) 스트라이크, \(ball) 볼")
-                    
-                    if strike == 3 {
-                        print("정답입니다.")
-                    } else if strike == 0 && ball == 0 {
-                        print("Nothing")
-                    }
-                    
+                //숫자 중복값 체크
+                if Set(String(number)).count == 3 {
+                    return true
                 } else {
                     print("올바르지 않은 입력값입니다. (중복 값)")
+                    return false
                 }
             } else {
                 print("올바르지 않은 입력값입니다. (문자 포함)")
+                return false
             }
         }
     }
-} while (baseballGame.num != myNum) //정답 맞출때까지 반복
+    
+    func gameStart(_ myNum: String) {
+        //print("내입력값: \(myNum), 컴터입력값: \(comNum)")
+        let myNumArr: [String] = myNum.map { String($0) }
+        let comNumArr: [String] = comNum.map { String($0) }
 
+        for i in 0...myNumArr.count - 1 {
+            //숫자가 일치하면 스트라이크
+            for j in 0...myNumArr.count - 1 {
+                //print("i: \(i), j: \(j), comNumArr[\(i)]: \(comNumArr[i]), myNumArr[\(j)]: \(myNumArr[j])")
+
+                //index와 값이 일치하면 스트라이크
+                if (i == j) && (comNumArr[i] == myNumArr[j]) {
+                    strike += 1
+                    //값이 일치하지만 index가 다르면 ball
+                } else if (i != j) && (comNumArr[i] == myNumArr[j]) {
+                    ball += 1
+                }
+            }
+        }
+    }
+    
+    //결과 확인
+    func gameResult() -> Bool {
+        if strike == 3 {
+            print("정답입니다!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("-------------------------------")
+            return true
+        } else if strike == 0 && ball == 0 {
+            print("Nothing")
+            return false
+        } else {
+            print("\(self.strike) 스트라이크, \(self.ball) 볼")
+            return false
+        }
+    }
+    
+    func recordClear() {
+        self.strike = 0
+        self.ball = 0
+    }
+}
+
+class GameRecord {
+    var gameRecordDictionary = [Int:Int]()
+}
+
+//게임 횟수 저장
+let gameRecord: GameRecord = GameRecord()
+
+while true {
+    print("환영합니다! 원하시는 번호를 입력해주세요.")
+    print("1. 게임 시작하기 2. 게임 기록 보기 3. 종료하기")
+    if let inputData = readLine() {
+        if let number = Int(inputData) {
+            switch number {
+            case 1:
+                //컴퓨터 숫자 초기화
+                let baseballGame: BaseballGame = BaseballGame()
+                
+                //print("컴터 선택 값: \(baseballGame.num)")
+                repeat {
+                    let myNum = baseballGame.inputData() //내 입력 숫자
+                
+                    //입력값 체크
+                    if baseballGame.inputDataValidation(myNum) {
+                        //게임 시작
+                        baseballGame.gameStart(myNum)
+                        //결과보기
+                        baseballGame.flag = baseballGame.gameResult()
+                        
+                        if baseballGame.flag {
+                            //정답시 게임 기록
+                            if gameRecord.gameRecordDictionary.keys.isEmpty {
+                                gameRecord.gameRecordDictionary[1] = baseballGame.inputCnt
+                            } else {
+                                gameRecord.gameRecordDictionary[gameRecord.gameRecordDictionary.keys.max()! + 1] = baseballGame.inputCnt
+                            }
+                            baseballGame.inputCnt = 0   //입력 횟수 초기화
+                        } else {
+                            //오답 시 초기화
+                            baseballGame.recordClear()
+                        }
+                    }
+                } while (baseballGame.flag != true) //true가 될때까지 반복
+                
+                break
+            case 2:
+                print("----------------------------------")
+                print("게임 기록 보기")
+                if(gameRecord.gameRecordDictionary.count == 0) {
+                    print("진행한 게임이 없습니다.")
+                } else {
+                    for i in gameRecord.gameRecordDictionary.keys.sorted() {
+                        print("\(i)번째 게임 : 시도 횟수 - \(gameRecord.gameRecordDictionary[i]!)")
+                    }
+                }
+                print("----------------------------------")
+                break
+            case 3:
+                print("<숫자 야구 게임을 종료합니다.>")
+                exit(0)
+            default:
+                print("올바른 숫자를 입력해주세요!")
+            }
+        } else {
+            print("올바른 숫자를 입력해주세요!")
+        }
+    }
+}
