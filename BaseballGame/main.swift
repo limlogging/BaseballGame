@@ -207,12 +207,17 @@ class BaseballGame {
         } else {
             //숫자/문자 체크
             if let number = Int(inputData) {
-                //숫자 중복값 체크
-                if Set(String(number)).count == 3 {
-                    return true
-                } else {
-                    print("올바르지 않은 입력값입니다. (중복 값)")
+                if inputData.first == "0" {
+                    print("올바르지 않은 입력값입니다. (첫 자리 0)")
                     return false
+                } else {
+                    //숫자 중복값 체크
+                    if Set(String(number)).count == 3 {
+                        return true
+                    } else {
+                        print("올바르지 않은 입력값입니다. (중복 값)")
+                        return false
+                    }
                 }
             } else {
                 print("올바르지 않은 입력값입니다. (문자 포함)")
@@ -263,8 +268,21 @@ class BaseballGame {
     }
 }
 
+//게임 기록
 class GameRecord {
     var gameRecordDictionary = [Int:Int]()
+    func showGameRecord() {
+        print("----------------------------------")
+        print("게임 기록 보기")
+        if(gameRecord.gameRecordDictionary.count == 0) {
+            print("진행한 게임이 없습니다.")
+        } else {
+            for i in gameRecord.gameRecordDictionary.keys.sorted() {
+                print("\(i)번째 게임 : 시도 횟수 - \(gameRecord.gameRecordDictionary[i]!)")
+            }
+        }
+        print("----------------------------------")
+    }
 }
 
 //게임 횟수 저장
@@ -305,19 +323,11 @@ while true {
                         }
                     }
                 } while (baseballGame.flag != true) //true가 될때까지 반복
-                
+                    
                 break
             case 2:
-                print("----------------------------------")
-                print("게임 기록 보기")
-                if(gameRecord.gameRecordDictionary.count == 0) {
-                    print("진행한 게임이 없습니다.")
-                } else {
-                    for i in gameRecord.gameRecordDictionary.keys.sorted() {
-                        print("\(i)번째 게임 : 시도 횟수 - \(gameRecord.gameRecordDictionary[i]!)")
-                    }
-                }
-                print("----------------------------------")
+                //기록 보기
+                gameRecord.showGameRecord()
                 break
             case 3:
                 print("<숫자 야구 게임을 종료합니다.>")
